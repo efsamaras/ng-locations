@@ -1,1 +1,11 @@
-<p>map works!</p>
+<div *ngIf="apiLoaded | async" class="map-container">
+    <google-map [options]="options" width="100%" height="100%">
+        <map-marker
+            *ngFor="let location of locations"
+            [position]="location.coordinates"
+            (click)="onMarkerClick(location)"
+        >
+            <map-info-window>{{ location.name }}</map-info-window>
+        </map-marker>
+    </google-map>
+</div>

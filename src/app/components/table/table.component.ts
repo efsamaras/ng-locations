@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocationModel, LocationsService } from '../../services/locations.service';
+import { GoogleLocation, LocationsService } from '../../services/locations.service';
 import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
@@ -8,8 +8,8 @@ import { MatTableDataSource } from '@angular/material/table';
     styleUrls: ['./table.component.scss'],
 })
 export class TableComponent implements OnInit {
-    displayedColumns: string[] = ['name', 'coordinates'];
-    dataSource = new MatTableDataSource<LocationModel>([]);
+    displayedColumns: string[] = ['name', 'latitude', 'longitude'];
+    dataSource = new MatTableDataSource<GoogleLocation>([]);
     constructor(private locationsService: LocationsService) {}
 
     ngOnInit() {
