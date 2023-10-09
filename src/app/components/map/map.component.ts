@@ -27,6 +27,7 @@ export class MapComponent implements OnInit {
         zoom: 4,
     };
     locations: MapLocation[] = [];
+    selectedLocation: MapLocation | null;
     mapInfoContent = '';
 
     constructor(
@@ -53,8 +54,13 @@ export class MapComponent implements OnInit {
     onMarkerClick(markerIndex: number, location: MapLocation) {
         const mapMarker = this.mapMarkers.get(markerIndex);
         if (mapMarker) {
+            this.selectedLocation = location;
             this.mapInfoContent = location.name;
             this.infoWindow.open(mapMarker);
         }
+    }
+
+    onMapInfoClosed() {
+        this.selectedLocation = null;
     }
 }

@@ -14,9 +14,10 @@ import { GoogleMapsModule } from '@angular/google-maps';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSortModule } from '@angular/material/sort';
+import { SidePanelComponent } from './components/side-panel/side-panel.component';
 
 @NgModule({
-    declarations: [AppComponent, NavbarComponent, MapComponent, TableComponent],
+    declarations: [AppComponent, NavbarComponent, MapComponent, TableComponent, SidePanelComponent],
     imports: [
         BrowserModule,
         BrowserAnimationsModule,
