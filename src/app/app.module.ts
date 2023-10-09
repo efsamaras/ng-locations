@@ -11,16 +11,22 @@ import { TableComponent } from './components/table/table.component';
 import { HttpClientJsonpModule, HttpClientModule } from '@angular/common/http';
 import { MatTableModule } from '@angular/material/table';
 import { GoogleMapsModule } from '@angular/google-maps';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
     declarations: [AppComponent, NavbarComponent, MapComponent, TableComponent],
     imports: [
         BrowserModule,
+        BrowserAnimationsModule,
         AppRoutingModule,
         GoogleMapsModule,
         HttpClientJsonpModule,
         HttpClientModule,
         MatListModule,
+        MatPaginatorModule,
+        MatSortModule,
         MatTableModule,
         MatToolbarModule,
     ],

@@ -1,8 +1,16 @@
 import { Component, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { Observable } from 'rxjs';
-import { GoogleLocation, LocationsService } from '../../services/locations.service';
+import { LocationsService } from '../../services/locations.service';
 import { GoogleApisService } from '../../services/google-apis.service';
 import { MapInfoWindow, MapMarker } from '@angular/google-maps';
+
+export interface MapLocation {
+    name: string;
+    coordinates: {
+        lat: number;
+        lng: number;
+    };
+}
 
 @Component({
     selector: 'app-map',
@@ -18,7 +26,7 @@ export class MapComponent implements OnInit {
         center: { lat: 40, lng: 25 },
         zoom: 4,
     };
-    locations: GoogleLocation[] = [];
+    locations: MapLocation[] = [];
     mapInfoContent = '';
 
     constructor(
@@ -30,11 +38,19 @@ export class MapComponent implements OnInit {
 
     ngOnInit() {
         this.locationsService.getLocations().then((locations) => {
-            this.locations = locations;
+            this.locations = locations.map((location) => {
+                return {
+                    name: location.name,
+                    coordinates: {
+                        lat: location.coordinates[0],
+                        lng: location.coordinates[1],
+                    },
+                };
+            });
         });
     }
 
-    onMarkerClick(markerIndex: number, location: GoogleLocation) {
+    onMarkerClick(markerIndex: number, location: MapLocation) {
         const mapMarker = this.mapMarkers.get(markerIndex);
         if (mapMarker) {
             this.mapInfoContent = location.name;
