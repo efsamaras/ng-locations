@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MapComponent } from './map.component';
+import { HttpClientModule } from '@angular/common/http';
 
 describe('MapComponent', () => {
     let component: MapComponent;
@@ -9,6 +10,7 @@ describe('MapComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [MapComponent],
+            imports: [HttpClientModule],
         });
         fixture = TestBed.createComponent(MapComponent);
         component = fixture.componentInstance;
