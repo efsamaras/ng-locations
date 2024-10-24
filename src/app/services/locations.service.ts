@@ -3,7 +3,10 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, firstValueFrom, map, of } from 'rxjs';
 
 export interface LocationModel {
-    coordinates: [number, number];
+    coordinates: {
+        lat: number;
+        lng: number;
+    };
     name: string;
 }
 
@@ -17,7 +20,15 @@ export class LocationsService {
     getLocations(): Promise<LocationModel[]> {
         const source$ = this.http.get(this.jsonUrl).pipe(
             map((response) => {
-                return response as LocationModel[];
+                return (response as []).map((location) => {
+                    return {
+                        name: location[0],
+                        coordinates: {
+                            lat: location[1],
+                            lng: location[2],
+                        },
+                    } as LocationModel;
+                });
             }),
             catchError((error) => {
                 console.log(error);

@@ -43,8 +43,8 @@ export class MapComponent implements OnInit {
                 return {
                     name: location.name,
                     coordinates: {
-                        lat: location.coordinates[0],
-                        lng: location.coordinates[1],
+                        lat: location.coordinates.lat,
+                        lng: location.coordinates.lng,
                     },
                 };
             });

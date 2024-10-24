@@ -28,8 +28,8 @@ export class TableComponent implements OnInit {
             this.dataSource.data = locations.map((location) => {
                 return {
                     name: location.name,
-                    latitude: location.coordinates[0],
-                    longitude: location.coordinates[1],
+                    latitude: location.coordinates.lat,
+                    longitude: location.coordinates.lng,
                 };
             });
             this.dataSource.paginator = this.paginator;
