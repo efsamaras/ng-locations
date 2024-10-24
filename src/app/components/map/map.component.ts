@@ -1,6 +1,5 @@
-import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Observable } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
 import { LocationsService } from '../../services/locations.service';
 import { GoogleApisService } from '../../services/google-apis.service';
 import { MarkerClusterer, SuperClusterAlgorithm } from '@googlemaps/markerclusterer';
@@ -18,7 +17,7 @@ export interface MapLocation {
     templateUrl: './map.component.html',
     styleUrls: ['./map.component.scss'],
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
     @ViewChild('mapElement', { static: true }) mapElement: ElementRef;
     apiLoaded: Observable<boolean>;
     map: google.maps.Map;
@@ -29,10 +28,13 @@ export class MapComponent implements OnInit {
         minZoom: 2,
     };
     locations: MapLocation[] = [];
+    mapMarkers: google.maps.Marker[] = [];
     selectedLocation: MapLocation | null;
     mapInfoContent = '';
     infoWindow: google.maps.InfoWindow;
     markerClusterer: MarkerClusterer;
+
+    private zoomChangedListener: google.maps.MapsEventListener;
 
     constructor(
         private locationsService: LocationsService,
@@ -53,19 +55,41 @@ export class MapComponent implements OnInit {
         });
     }
 
+    ngOnDestroy() {
+        if (this.zoomChangedListener) {
+            google.maps.event.removeListener(this.zoomChangedListener);
+        }
+    }
+
     initMap(): void {
         this.ngZone.runOutsideAngular(() => {
             this.map = new google.maps.Map(this.mapElement.nativeElement, this.options);
             this.infoWindow = new google.maps.InfoWindow();
             this.map.addListener('idle', () => {
-                this.createMarkers();
+                this.initMarkers();
+                this.onZoomChanged();
             });
         });
     }
 
+    initMarkers() {
+        this.mapMarkers = this.createMarkers();
+
+        const clusterOptions = {
+            map: this.map,
+            markers: this.mapMarkers,
+            algorithm: new SuperClusterAlgorithm({
+                radius: 300,
+                minPoints: 3,
+            }),
+        };
+
+        this.markerClusterer = new MarkerClusterer(clusterOptions);
+    }
+
     createMarkers() {
         const bounds = this.map.getBounds();
-        const markers = this.locations
+        return this.locations
             .filter((location) => !bounds || bounds.contains(location.coordinates))
             .map((location) => {
                 const marker = new google.maps.Marker({
@@ -80,17 +104,16 @@ export class MapComponent implements OnInit {
 
                 return marker;
             });
+    }
 
-        const clusterOptions = {
-            map: this.map,
-            markers,
-            algorithm: new SuperClusterAlgorithm({
-                radius: 300,
-                minPoints: 3,
-            }),
-        };
+    onZoomChanged() {
+        this.zoomChangedListener = this.map.addListener('zoom_changed', () => {
+            this.markerClusterer.clearMarkers(true);
+            this.mapMarkers = this.createMarkers();
 
-        this.markerClusterer = new MarkerClusterer(clusterOptions);
+            this.markerClusterer.addMarkers(this.mapMarkers, true);
+            this.markerClusterer.render();
+        });
     }
 
     onMarkerClick(marker: google.maps.Marker, location: MapLocation) {
