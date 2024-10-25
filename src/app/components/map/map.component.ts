@@ -29,6 +29,7 @@ export class MapComponent implements OnInit, OnDestroy {
     };
     locations: MapLocation[] = [];
     mapMarkers: google.maps.Marker[] = [];
+    heatmap: google.maps.visualization.HeatmapLayer;
     selectedLocation: MapLocation | null;
     mapInfoContent = '';
     infoWindow: google.maps.InfoWindow;
@@ -68,6 +69,7 @@ export class MapComponent implements OnInit, OnDestroy {
             this.map.addListener('idle', () => {
                 this.initMarkers();
                 this.onZoomChanged();
+                // this.initHeatmapLayer();
             });
         });
     }
@@ -104,6 +106,19 @@ export class MapComponent implements OnInit, OnDestroy {
 
                 return marker;
             });
+    }
+
+    initHeatmapLayer() {
+        const bounds = this.map.getBounds();
+        const heatmapData = this.locations
+            .filter((location) => !bounds || bounds.contains(location.coordinates))
+            .map((location) => new google.maps.LatLng(location.coordinates.lat, location.coordinates.lng));
+        this.heatmap = new google.maps.visualization.HeatmapLayer({
+            data: heatmapData,
+            radius: 20,
+            dissipating: true,
+            map: this.map,
+        });
     }
 
     onZoomChanged() {
